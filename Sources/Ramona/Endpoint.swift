@@ -16,6 +16,20 @@ public class Endpoint: MIDIObject {
 
 // MARK: - PUBLIC
 public extension Endpoint {
+  static var allSources: [Endpoint] {
+    return (0 ..< MIDIGetNumberOfSources())
+      .map(MIDIGetSource)
+      .map(Endpoint.init(ref:))
+  }
+  
+  
+  static var allDestinations: [Endpoint] {
+    return (0 ..< MIDIGetNumberOfDestinations())
+      .map(MIDIGetDestination)
+      .map(Endpoint.init(ref:))
+  }
+  
+  
   var entity: Entity? {
     var entityRef: MIDIEntityRef = .zero
     switch MIDIEndpointGetEntity(ref, &entityRef) {

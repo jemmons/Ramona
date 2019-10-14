@@ -3,8 +3,8 @@ import CoreMIDI
 
 
 
-public class Entity {
-  private let ref: MIDIEntityRef
+public class Entity: MIDIObject {
+  public let ref: MIDIEntityRef
   
   
   internal init(ref: MIDIEntityRef) {
