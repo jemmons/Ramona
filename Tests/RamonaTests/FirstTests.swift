@@ -4,7 +4,7 @@ import Ramona
 
 
 class FirstTests: XCTestCase {
-  func xtestFirst() {
+  func testFirst() {
     let waiting = expectation(description: "Waiting…")
     
     let sources = Endpoint.allSources
