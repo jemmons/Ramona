@@ -3,6 +3,21 @@ import Foundation
 
 
 internal enum Status {
+  internal enum Throwable: LocalizedError {
+    case noStatusFlag
+    case unknown
+    
+    var errorDescription: String? {
+      switch self {
+      case .noStatusFlag:
+        return "The given byte does not have its status flag set."
+      case .unknown:
+        return "Unknown or undefined status code encountered."
+      }
+    }
+  }
+  
+  
   case noteOff(Channel)
   case noteOn(Channel)
   case polyKeyPressure(Channel)
@@ -22,22 +37,6 @@ internal enum Status {
   case stop
   case activeSensing
   case systemReset
-  
-  
-  
-  internal enum Throwable: LocalizedError {
-    case noStatusFlag
-    case unknown
-    
-    var errorDescription: String? {
-      switch self {
-      case .noStatusFlag:
-        return "The given byte does not have its status flag set."
-      case .unknown:
-        return "Unknown or undefined status code encountered."
-      }
-    }
-  }
   
   
   init(byte: UInt8) throws {

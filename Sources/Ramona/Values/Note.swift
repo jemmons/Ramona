@@ -1,12 +1,35 @@
 import Foundation
 
+@propertyWrapper
+public struct MIDIValue {
+  var value: Int
+  
+  
+  public init(wrappedValue: Int) {
+    value = wrappedValue
+  }
+  
+  
+  public var wrappedValue: Int {
+    get {
+      return min(127, max(0, value))
+    }
+    set {
+      value = newValue
+    }
+  }
+}
+
+
 
 public struct Note {
-  public var value: Value
+  @MIDIValue public private(set) var number: Int
+  @MIDIValue public private(set) var value: Int
+ 
   
-  
-  public init(_ note: Value) {
-    value = note
+  public init(number: Int, value: Int) {
+    self.number = number
+    self.value = value
   }
 }
 
@@ -14,9 +37,18 @@ public struct Note {
 
 extension Note: CustomStringConvertible {
   public var description: String {
-    switch value.value {
-    case (0...20):
-      return "MIDI Note \(value.value)"
+    switch number {
+    case (0...11):
+      return "MIDI Note \(number)"
+    case 12: return "C0"
+    case 13: return "C0♯"
+    case 14: return "D0"
+    case 15: return "D0♯"
+    case 16: return "E0"
+    case 17: return "F0"
+    case 18: return "F0♯"
+    case 19: return "G0"
+    case 20: return "G0♯"
     case 21: return "A0"
     case 22: return "A0♯"
     case 23: return "B0"
