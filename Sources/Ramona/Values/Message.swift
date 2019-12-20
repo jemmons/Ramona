@@ -76,10 +76,10 @@ public enum Message {
       self = .controlChange(c, Control())
       
     case .programChange(let c):
-      self = .programChange(c, Helper.int(from: data))
+      self = try .programChange(c, Helper.int(from: data))
     
     case .channelPressure(let c):
-      self = .channelPressure(c, Helper.int(from: data))
+      self = try .channelPressure(c, Helper.int(from: data))
     
     case .pitchBend(let c):
       #warning("Figure out how pitchbend works.")
