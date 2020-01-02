@@ -19,7 +19,9 @@ public struct Event {
 // MARK: - PUBLIC
 public extension Event {
   static func makeEvents(timeStamp: MIDITimeStamp, data: Data) -> [Event] {
-    return Message.parseMessages(from: data).map { Event(timeStamp: timeStamp, message: $0) }
+    return []
+    #warning("Do something?")
+//    return Message.parseMessages(from: data).map { Event(timeStamp: timeStamp, message: $0) }
     
   }
 }

@@ -3,7 +3,7 @@ import Foundation
 
 
 internal enum Status {
-  internal enum Throwable: LocalizedError {
+  internal enum Error: LocalizedError {
     case noStatusFlag
     case unknown
     
@@ -41,7 +41,7 @@ internal enum Status {
   
   init(byte: UInt8) throws {
     guard byte.isStatus else {
-      throw Throwable.noStatusFlag
+      throw Error.noStatusFlag
     }
     
     switch byte.statusCode {
@@ -71,7 +71,7 @@ internal enum Status {
         self = .songSelect
       case 0b0100,
            0b0101:
-        throw Throwable.unknown
+        throw Error.unknown
       case 0b0110:
         self = .tuneRequest
       case 0b0111:
@@ -79,7 +79,7 @@ internal enum Status {
       case 0b1000:
         self = .timingClock
       case 0b1001:
-        throw Throwable.unknown
+        throw Error.unknown
       case 0b1010:
         self = .start
       case 0b1011:
@@ -87,7 +87,7 @@ internal enum Status {
       case 0b1100:
         self = .stop
       case 0b1101:
-        throw Throwable.unknown
+        throw Error.unknown
       case 0b1110:
         self = .activeSensing
       case 0b1111:
