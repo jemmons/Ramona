@@ -18,8 +18,20 @@ public enum Channel: Int {
   ch14,
   ch15,
   ch16
+  
+  init(status: Status) {
+    #warning("Force unwrap")
+    self = Channel(rawValue: status.systemCode)!
+  }
 }
 
+
+
+extension Channel {
+  enum Error: LocalizedError {
+    case notStatus
+  }
+}
 
 
 extension Channel: CustomStringConvertible {

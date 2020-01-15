@@ -70,71 +70,74 @@ public enum Message {
   init(data: Data) {
     self = .noteOn(channel: .ch1, note: .a0, velocity: .ff)
   }
-  internal init(status: Status, data: [UInt8]) throws {
-    guard data.count == status.numberOfDataBytes else {
-      throw Error.invalidData
-    }
+  
+  internal init(status: Status, data: Data) throws {
+    self = .noteOn(channel: .ch1, note: .a0, velocity: .ff)
     
-    switch status {
-    case .noteOff(let c):
-      let (key, vel) = try Helper.ints(from: data)
-      self = .noteOff(channel: c, note: Note(key), velocity: Velocity(vel))
-    
-    case .noteOn(let c):
-      let (key, vel) = try Helper.ints(from: data)
-      self = .noteOn(channel: c, note: Note(key), velocity: Velocity(vel))
-    
-    case .polyKeyPressure(let c):
-      let (key, pressure) = try Helper.ints(from: data)
-      self = .polyKeyPressure(channel: c, note: Note(key), pressure: pressure)
-    
-    case .controlChange(let c):
-      let (control, value) = try Helper.ints(from: data)
-      #warning("going to need a lot of controls")
-      self = .controlChange(channel: c, control: Control(), value: value)
-      
-    case .programChange(let c):
-      self = try .programChange(channel: c, program: Helper.int(from: data))
-    
-    case .channelPressure(let c):
-      self = try .channelPressure(channel: c, pressure: Helper.int(from: data))
-    
-    case .pitchBend(let c):
-      self = try .pitchBend(channel: c, change: Helper.long(from: data))
-      
-    case .systemExclusive:
-      #warning("need to figure out sysex works")
-      fatalError("sysex")
-    
-    case .timeCodeQuarterFrame:
-      self = try .timeCodeQuarterFrame(fragment: Helper.fragment(from: data))
-      
-    case .songPositionPointer:
-      self = try .songPositionPointer(beatCount: Helper.long(from: data))
-    
-    case .songSelect:
-      self = try .songSelect(index: Helper.int(from: data))
-      
-    case .tuneRequest:
-      self = .tuneRequest
-      
-    case .endOfExclusive:
-      #warning("Figure out how sysex works.")
-      fatalError("sysex")
-
-    case .timingClock:
-      self = .timingClock
-    case .start:
-      self = .start
-    case .continue:
-      self = .continue
-    case .stop:
-      self = .stop
-    case .activeSensing:
-      self = .activeSensing
-    case .systemReset:
-      self = .systemReset
-    }
+//    guard data.count == status.numberOfDataBytes else {
+//      throw Error.invalidData
+//    }
+//
+//    switch status {
+//    case .noteOff(let c):
+//      let (key, vel) = try Helper.ints(from: data)
+//      self = .noteOff(channel: c, note: Note(key), velocity: Velocity(vel))
+//
+//    case .noteOn(let c):
+//      let (key, vel) = try Helper.ints(from: data)
+//      self = .noteOn(channel: c, note: Note(key), velocity: Velocity(vel))
+//
+//    case .polyKeyPressure(let c):
+//      let (key, pressure) = try Helper.ints(from: data)
+//      self = .polyKeyPressure(channel: c, note: Note(key), pressure: pressure)
+//
+//    case .controlChange(let c):
+//      let (control, value) = try Helper.ints(from: data)
+//      #warning("going to need a lot of controls")
+//      self = .controlChange(channel: c, control: Control(), value: value)
+//
+//    case .programChange(let c):
+//      self = try .programChange(channel: c, program: Helper.int(from: data))
+//
+//    case .channelPressure(let c):
+//      self = try .channelPressure(channel: c, pressure: Helper.int(from: data))
+//
+//    case .pitchBend(let c):
+//      self = try .pitchBend(channel: c, change: Helper.long(from: data))
+//
+//    case .systemExclusive:
+//      #warning("need to figure out sysex works")
+//      fatalError("sysex")
+//
+//    case .timeCodeQuarterFrame:
+//      self = try .timeCodeQuarterFrame(fragment: Helper.fragment(from: data))
+//
+//    case .songPositionPointer:
+//      self = try .songPositionPointer(beatCount: Helper.long(from: data))
+//
+//    case .songSelect:
+//      self = try .songSelect(index: Helper.int(from: data))
+//
+//    case .tuneRequest:
+//      self = .tuneRequest
+//
+//    case .endOfExclusive:
+//      #warning("Figure out how sysex works.")
+//      fatalError("sysex")
+//
+//    case .timingClock:
+//      self = .timingClock
+//    case .start:
+//      self = .start
+//    case .continue:
+//      self = .continue
+//    case .stop:
+//      self = .stop
+//    case .activeSensing:
+//      self = .activeSensing
+//    case .systemReset:
+//      self = .systemReset
+//    }
   }
 }
 
@@ -244,3 +247,64 @@ private extension Data {
     return subdata
   }
 }
+
+
+
+//guard byte.isStatus else {
+//  throw Error.noStatusFlag
+//}
+//
+//switch byte.statusCode {
+//case 0b000:
+//  self = .noteOff(byte.channel)
+//case 0b001:
+//  self = .noteOn(byte.channel)
+//case 0b010:
+//  self = .polyKeyPressure(byte.channel)
+//case 0b011:
+//  self = .controlChange(byte.channel)
+//case 0b100:
+//  self = .programChange(byte.channel)
+//case 0b101:
+//  self = .channelPressure(byte.channel)
+//case 0b110:
+//  self = .pitchBend(byte.channel)
+//case 0b111:
+//  switch byte.systemCode {
+//  case 0b0000:
+//    self = .systemExclusive
+//  case 0b0001:
+//    self = .timeCodeQuarterFrame
+//  case 0b0010:
+//    self = .songPositionPointer
+//  case 0b0011:
+//    self = .songSelect
+//  case 0b0100,
+//       0b0101:
+//    throw Error.unknown
+//  case 0b0110:
+//    self = .tuneRequest
+//  case 0b0111:
+//    self = .endOfExclusive
+//  case 0b1000:
+//    self = .timingClock
+//  case 0b1001:
+//    throw Error.unknown
+//  case 0b1010:
+//    self = .start
+//  case 0b1011:
+//    self = .continue
+//  case 0b1100:
+//    self = .stop
+//  case 0b1101:
+//    throw Error.unknown
+//  case 0b1110:
+//    self = .activeSensing
+//  case 0b1111:
+//    self = .systemReset
+//  default:
+//    fatalError("Integers are broken.")
+//  }
+//default:
+//  fatalError("Integers are broken.")
+//}

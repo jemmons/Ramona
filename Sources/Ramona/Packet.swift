@@ -10,16 +10,17 @@ struct Packet {
   init(timeStamp: MIDITimeStamp, data: Data) {
     self.timeStamp = timeStamp
     messages = data
-      .reduce(into: [Data]()) { result, next in
-        if next.isStatusByte {
-          result.append(Data(repeating: next, count: 1))
-        } else {
+      .reduce(into: [(status: Status, data: Data)]()) { result, next in
+        do {
+          try result.append((Status(byte: next), Data()))
+        } catch {
           result.indices.last.map { i in
-            result[i].append(next)
+            result[i].data.append(next)
           }
         }
     }
-    .map(Message.init(data:))
+    .map { try! Message.init(status: $0.status, data: $0.data) }
+    #warning("try!")
   }
 }
 
