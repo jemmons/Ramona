@@ -67,6 +67,9 @@ public enum Message {
 //  }
 //
 //
+  init(data: Data) {
+    self = .noteOn(channel: .ch1, note: .a0, velocity: .ff)
+  }
   internal init(status: Status, data: [UInt8]) throws {
     guard data.count == status.numberOfDataBytes else {
       throw Error.invalidData
