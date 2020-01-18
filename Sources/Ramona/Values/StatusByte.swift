@@ -2,22 +2,23 @@ import Foundation
 
 
 
-public struct Status {
-  let statusCode: Int
-  let systemCode: Int
+public struct StatusByte {
+  private let value: UInt8
+  public var messageType: Int { Int(value.messageType) }
+  public var channelIndex: Int { Int(value.channelIndex) }
+  public var systemMessageType: Int { channelIndex }
 
-  init(byte: UInt8) throws {
+  public init(byte: UInt8) throws {
     guard byte.isStatus else {
       throw Error.noStatusFlag
     }
-    statusCode = Int(byte.statusCode)
-    systemCode = Int(byte.systemCode)
+    value = byte
   }
 }
 
 
 
-public extension Status {
+public extension StatusByte {
   enum Error: LocalizedError {
     case noStatusFlag
     
@@ -73,11 +74,11 @@ private extension UInt8 {
     return self & 0b10000000 == 0b10000000
   }
 
-  var statusCode: UInt8 {
+  var messageType: UInt8 {
     return (self & 0b01110000) >> 4
   }
   
-  var systemCode: UInt8 {
+  var channelIndex: UInt8 {
     return (self & 0b00001111)
   }  
 }

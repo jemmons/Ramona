@@ -2,21 +2,17 @@ import Foundation
 import CoreMIDI
 
 
-public typealias Pressure = Int
-public typealias ControlValue = Int
-public typealias Program = Int
-public typealias PitchChange = Int
 
 public enum Message {
   case noteOff(channel: Channel, note: Note, velocity: Velocity)
   case noteOn(channel: Channel, note: Note, velocity: Velocity)
   case polyKeyPressure(channel: Channel, note: Note, pressure: Pressure)
-  case controlChange(channel: Channel, control: Control, value: ControlValue)
+  case controlChange(channel: Channel, control: Control)
   case programChange(channel: Channel, program: Program)
   case channelPressure(channel: Channel, pressure: Pressure)
   case pitchBend(channel: Channel, change: PitchChange)
   case timeCodeQuarterFrame(fragment: SMPTEFragment)
-  case songPositionPointer(beatCount: Int)
+  case songPositionPointer(beatCount: Beats)
   case songSelect(index: Int)
   case tuneRequest
   case timingClock
@@ -27,24 +23,15 @@ public enum Message {
   case systemReset
   
   public enum Error: LocalizedError {
-    case missingMessage
     case missingData
-    case notData
-    case invalidData
-    case invalidStatus
+    case undefined
     
     public var errorDescription: String? {
       switch self {
-      case .missingMessage:
-        return "No MIDI message found."
-      case .invalidStatus:
-        return "The status byte could not be parsed."
       case .missingData:
         return "There is insufficiant data for this message."
-      case .invalidData:
-        return "The data for this message is invalid."
-      case .notData:
-        return "The status flag for this data is set."
+      case .undefined:
+        return "This message is left undefined by the MIDI spec."
       }
     }
   }
@@ -71,9 +58,102 @@ public enum Message {
     self = .noteOn(channel: .ch1, note: .a0, velocity: .ff)
   }
   
-  internal init(status: Status, data: Data) throws {
-    self = .noteOn(channel: .ch1, note: .a0, velocity: .ff)
-    
+  internal init(status: StatusByte, data: [DataByte]) throws {
+    switch status.messageType {
+    case 0b000:
+      try self = .noteOff(
+        channel: Channel(status: status),
+        note: Note(dataByte: data.firstByte()),
+        velocity: Velocity(dataByte: data.secondByte())
+      )
+    case 0b001:
+      try self = .noteOn(
+        channel: Channel(status: status),
+        note: Note(dataByte: data.firstByte()),
+        velocity: Velocity(dataByte: data.secondByte())
+      )
+    case 0b010:
+      try self = .polyKeyPressure(
+        channel: Channel(status: status),
+        note: Note(dataByte: data.firstByte()),
+        pressure: Pressure(dataByte: data.secondByte())
+      )
+    case 0b011:
+      #warning("Actually parse CCs")
+      try self = .controlChange(
+        channel: Channel(status: status),
+        control: .allNotesOff
+      )
+    case 0b100:
+      try self = .programChange(
+        channel: Channel(status: status),
+        program: Program(dataByte: data.secondByte())
+      )
+    case 0b101:
+      try self = .channelPressure(
+        channel: Channel(status: status),
+        pressure: Pressure(dataByte: data.firstByte())
+      )
+    case 0b110:
+      try self = .pitchBend(
+        channel: Channel(status: status),
+        change: PitchChange(lsb: data.firstByte(), msb: data.secondByte())
+      )
+    case 0b111:
+      switch status.systemMessageType {
+      case 0b0000:
+        #warning("need to implement sysex")
+        fatalError("sysex")
+      case 0b0001:
+        try self = .timeCodeQuarterFrame(fragment: SMPTEFragment(dataByte: data.firstByte()))
+      case 0b0010:
+        try self = .songPositionPointer(beatCount: Beats(lsb: data.firstByte(), msb: data.secondByte()))
+      case 0b0011:
+        try self = .songSelect(index: data.firstByte().value)
+      case 0b0100,
+           0b0101:
+        throw Error.undefined
+      case 0b0110:
+        self = .tuneRequest
+      case 0b0111:
+        #warning("Implement sysex")
+        fatalError("end sysex")
+      }
+    }
+    //  switch byte.systemCode {
+    //  case 0b0000:
+    //    self = .systemExclusive
+    //  case 0b0001:
+    //    self = .timeCodeQuarterFrame
+    //  case 0b0010:
+    //    self = .songPositionPointer
+    //  case 0b0011:
+    //    self = .songSelect
+    //  case 0b0100,
+    //       0b0101:
+    //    throw Error.unknown
+    //  case 0b0110:
+    //    self = .tuneRequest
+    //  case 0b0111:
+    //    self = .endOfExclusive
+    //  case 0b1000:
+    //    self = .timingClock
+    //  case 0b1001:
+    //    throw Error.unknown
+    //  case 0b1010:
+    //    self = .start
+    //  case 0b1011:
+    //    self = .continue
+    //  case 0b1100:
+    //    self = .stop
+    //  case 0b1101:
+    //    throw Error.unknown
+    //  case 0b1110:
+    //    self = .activeSensing
+    //  case 0b1111:
+    //    self = .systemReset
+    //  default:
+    //    fatalError("Integers are broken.")
 //    guard data.count == status.numberOfDataBytes else {
 //      throw Error.invalidData
 //    }
@@ -166,74 +246,6 @@ public extension Message {
 
 
 
-// MARK: - HELPERS
-private enum Helper {
-  static func ints(from data: [UInt8]) throws -> (Int, Int) {
-    guard data.allSatisfy({ $0.isData }) else {
-      throw Message.Error.notData
-    }
-    guard data.count == 2 else {
-      throw Message.Error.invalidData
-    }
-    return (Int(data[0]), Int(data[1]))
-  }
-  
-  
-  static func int(from data: [UInt8]) throws -> Int {
-    guard data.allSatisfy({ $0.isData }) else {
-      throw Message.Error.notData
-    }
-    guard data.count == 1 else {
-      throw Message.Error.invalidData
-    }
-    return Int(data[0])
-  }
-  
-  
-  static func long(from data: [UInt8]) throws -> Int {
-    guard data.allSatisfy({ $0.isData }) else {
-      throw Message.Error.notData
-    }
-    guard data.count == 2 else {
-      throw Message.Error.invalidData
-    }
-    return Int(data[0] | (data[1] << 7))
-  }
-  
-  
-  static func fragment(from data: [UInt8]) throws -> SMPTEFragment {
-    guard data.allSatisfy({ $0.isData }) else {
-      throw Message.Error.notData
-    }
-    guard data.count == 1 else {
-      throw Message.Error.invalidData
-    }
-    let byte = data[0]
-    let nibble = Int(byte & 0b0000_1111)
-    let type = byte & 0b0111_0000
-    switch type {
-    case 0: return .leastSignificantFrame(nibble)
-    case 1: return .mostSignificantFrame(nibble)
-    case 2: return .leastSignificantSecond(nibble)
-    case 3: return .mostSignificantSecond(nibble)
-    case 4: return .leastSignificantMinute(nibble)
-    case 5: return .mostSignificantMinute(nibble)
-    case 6: return .leastSignificantHour(nibble)
-    case 7: return .mostSignificantHour(nibble)
-    default: fatalError("Integers are broken.")
-    }
-  }
-}
-
-
-private extension UInt8 {
-  var isData: Bool {
-    return (self & 0b1000_0000) == 0b0000_0000
-  }
-}
-
-
-
 private extension Data {
   mutating func popFirst(_ count: Int) -> [UInt8]? {
     let subdata = (0 ..< count).map { _ in
@@ -308,3 +320,22 @@ private extension Data {
 //default:
 //  fatalError("Integers are broken.")
 //}
+
+
+
+private extension Array where Element == DataByte {
+  func firstByte() throws -> DataByte {
+    guard let byte = first else {
+      throw Message.Error.missingData
+    }
+    return byte
+  }
+  
+  
+  func secondByte() throws -> DataByte {
+    guard count >= 2 else {
+      throw Message.Error.missingData
+    }
+    return self[1]
+  }
+}

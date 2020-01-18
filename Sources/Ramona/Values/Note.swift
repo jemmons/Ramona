@@ -6,8 +6,8 @@ public enum Note: Int {
   case note0 = 0, note1, note2, note3, note4, note5, note6, note7, note8, note9, note10, note11
   case c0 = 12, c0Sharp, d0, d0Sharp, e0, f0, f0Sharp, g0, g0Sharp, a0, a0Sharp, b0, c1, c1Sharp, d1, d1Sharp, e1, f1, f1Sharp, g1, g1Sharp, a1, a1Sharp, b1, c2, c2Sharp, d2, d2Sharp, e2, f2, f2Sharp, g2, g2Sharp, a2, a2Sharp, b2, c3, c3Sharp, d3, d3Sharp, e3, f3, f3Sharp, g3, g3Sharp, a3, a3Sharp, b3, c4, c4Sharp, d4, d4Sharp, e4, f4, f4Sharp, g4, g4Sharp, a4, a4Sharp, b4, c5, c5Sharp, d5, d5Sharp, e5, f5, f5Sharp, g5, g5Sharp, a5, a5Sharp, b5, c6, c6Sharp, d6, d6Sharp, e6, f6, f6Sharp, g6, g6Sharp, a6, a6Sharp, b6, c7, c7Sharp, d7, d7Sharp, e7, f7, f7Sharp, g7, g7Sharp, a7, a7Sharp, b7, c8, c8Sharp, d8, d8Sharp, e8, f8, f8Sharp, g8, g8Sharp, a8, a8Sharp, b8, c9, c9Sharp, d9, d9Sharp, e9, f9, f9Sharp, g9
   
-  init(_ noteNumber: Int) {
-    self.init(rawValue: min(127, max(0, noteNumber)))!
+  init(dataByte: DataByte) {
+    self.init(rawValue: dataByte.value)!
   }
 }
 

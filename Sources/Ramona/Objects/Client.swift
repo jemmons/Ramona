@@ -25,20 +25,17 @@ public class Client {
 public extension Client {
   @discardableResult func makeInput(_ name: String, source: Endpoint, inputHandler: @escaping ([Message]) -> Void) throws -> Port {
     var portRef: MIDIPortRef = .zero
-    let portStatus = MIDIInputPortCreateWithBlock(ref, name as CFString, &portRef) { (packetListPointer: UnsafePointer<MIDIPacketList>, reference: UnsafeMutableRawPointer?) in
+    let portStatus = MIDIInputPortCreateWithBlock(ref, name as CFString, &portRef) { packetListPointer, _ in
       PacketList(pointer: packetListPointer).forEach { packet in
         inputHandler(packet.messages)
       }
     }
     
-    let port: Port
-    switch portStatus {
-    case noErr:
-      port = Port(ref: portRef)
-    case let code:
-      throw NSError(domain: NSOSStatusErrorDomain, code: Int(code), userInfo: nil)
+    guard noErr == portStatus else {
+      throw NSError(domain: NSOSStatusErrorDomain, code: Int(portStatus), userInfo: nil)
     }
     
+    let port = Port(ref: portRef)
     try port.connect(to: source)
     return port
   }

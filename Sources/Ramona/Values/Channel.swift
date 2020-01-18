@@ -19,9 +19,12 @@ public enum Channel: Int {
   ch15,
   ch16
   
-  init(status: Status) {
-    #warning("Force unwrap")
-    self = Channel(rawValue: status.systemCode)!
+  
+  init(status: StatusByte) throws {
+    guard let c = Channel(rawValue: status.channelIndex) else {
+      fatalError("Channel nibble larger than 4 bits")
+    }
+    self = c
   }
 }
 

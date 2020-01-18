@@ -9,26 +9,27 @@ struct Packet {
 
   init(timeStamp: MIDITimeStamp, data: Data) {
     self.timeStamp = timeStamp
-    messages = data
-      .reduce(into: [(status: Status, data: Data)]()) { result, next in
-        do {
-          try result.append((Status(byte: next), Data()))
-        } catch {
-          result.indices.last.map { i in
-            result[i].data.append(next)
-          }
-        }
-    }
-    .map { try! Message.init(status: $0.status, data: $0.data) }
-    #warning("try!")
+    messages = Helper.makeMessages(from: data)
   }
 }
 
 
 
-
-private extension UInt8 {
-  var isStatusByte: Bool {
-    return self & 0b10000000 == 0b10000000
+private enum Helper {
+  static func makeMessages(from data: Data) -> [Message] {
+    return split(data: data).compactMap { status, data in
+      try? Message.init(status: status, data: data)
+    }
+  }
+  
+  
+  private static func split(data: Data) -> [(Status, Data)] {
+    return data.reduce(into: [(Status, Data)]()) { result, next in
+      do {
+        try result.append((Status(byte: next), Data()))
+      } catch {
+        result.indices.last.map { result[$0].1.append(next) }
+      }
+    }
   }
 }
