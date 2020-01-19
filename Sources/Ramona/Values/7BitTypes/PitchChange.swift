@@ -2,13 +2,13 @@ import Foundation
 
 
 
-public struct PitchChange {
-  private let lsb: DataByte
-  private let msb: DataByte
-  var value: Int { msb.asMSB(withLSB: lsb) }
+public struct PitchChange: Int14Value {
+  private let lsb: Int7Value
+  private let msb: Int7Value
+  public var value: Int { msb.asMSB(withLSB: lsb) }
   
   
-  init(lsb: DataByte, msb: DataByte) {
+  public init(lsb: Int7Value, msb: Int7Value) {
     self.lsb = lsb
     self.msb = msb
   }

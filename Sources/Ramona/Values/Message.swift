@@ -7,7 +7,7 @@ public enum Message {
   case noteOff(channel: Channel, note: Note, velocity: Velocity)
   case noteOn(channel: Channel, note: Note, velocity: Velocity)
   case polyKeyPressure(channel: Channel, note: Note, pressure: Pressure)
-  case controlChange(channel: Channel, control: Control)
+  case controlChange(channel: Channel, control: ControlChange)
   case programChange(channel: Channel, program: Program)
   case channelPressure(channel: Channel, pressure: Pressure)
   case pitchBend(channel: Channel, change: PitchChange)
@@ -82,7 +82,7 @@ public enum Message {
       #warning("Actually parse CCs")
       try self = .controlChange(
         channel: Channel(status: status),
-        control: .allNotesOff
+        control: ControlChange(controlType: data.firstByte(), data: data.secondByte())
       )
     case 0b100:
       try self = .programChange(
@@ -118,106 +118,28 @@ public enum Message {
       case 0b0111:
         #warning("Implement sysex")
         fatalError("end sysex")
+      case 0b1000:
+        self = .timingClock
+      case 0b1001:
+        throw Error.undefined
+      case 0b1010:
+        self = .start
+      case 0b1011:
+        self = .continue
+      case 0b1100:
+        self = .stop
+      case 0b1101:
+        throw Error.undefined
+      case 0b1110:
+        self = .activeSensing
+      case 0b1111:
+        self = .systemReset
+      default:
+        fatalError("System message type outside of 4-bit bounds")
       }
+    default:
+      fatalError("Status type outside of 3-bit bounds")
     }
-    //  switch byte.systemCode {
-    //  case 0b0000:
-    //    self = .systemExclusive
-    //  case 0b0001:
-    //    self = .timeCodeQuarterFrame
-    //  case 0b0010:
-    //    self = .songPositionPointer
-    //  case 0b0011:
-    //    self = .songSelect
-    //  case 0b0100,
-    //       0b0101:
-    //    throw Error.unknown
-    //  case 0b0110:
-    //    self = .tuneRequest
-    //  case 0b0111:
-    //    self = .endOfExclusive
-    //  case 0b1000:
-    //    self = .timingClock
-    //  case 0b1001:
-    //    throw Error.unknown
-    //  case 0b1010:
-    //    self = .start
-    //  case 0b1011:
-    //    self = .continue
-    //  case 0b1100:
-    //    self = .stop
-    //  case 0b1101:
-    //    throw Error.unknown
-    //  case 0b1110:
-    //    self = .activeSensing
-    //  case 0b1111:
-    //    self = .systemReset
-    //  default:
-    //    fatalError("Integers are broken.")
-//    guard data.count == status.numberOfDataBytes else {
-//      throw Error.invalidData
-//    }
-//
-//    switch status {
-//    case .noteOff(let c):
-//      let (key, vel) = try Helper.ints(from: data)
-//      self = .noteOff(channel: c, note: Note(key), velocity: Velocity(vel))
-//
-//    case .noteOn(let c):
-//      let (key, vel) = try Helper.ints(from: data)
-//      self = .noteOn(channel: c, note: Note(key), velocity: Velocity(vel))
-//
-//    case .polyKeyPressure(let c):
-//      let (key, pressure) = try Helper.ints(from: data)
-//      self = .polyKeyPressure(channel: c, note: Note(key), pressure: pressure)
-//
-//    case .controlChange(let c):
-//      let (control, value) = try Helper.ints(from: data)
-//      #warning("going to need a lot of controls")
-//      self = .controlChange(channel: c, control: Control(), value: value)
-//
-//    case .programChange(let c):
-//      self = try .programChange(channel: c, program: Helper.int(from: data))
-//
-//    case .channelPressure(let c):
-//      self = try .channelPressure(channel: c, pressure: Helper.int(from: data))
-//
-//    case .pitchBend(let c):
-//      self = try .pitchBend(channel: c, change: Helper.long(from: data))
-//
-//    case .systemExclusive:
-//      #warning("need to figure out sysex works")
-//      fatalError("sysex")
-//
-//    case .timeCodeQuarterFrame:
-//      self = try .timeCodeQuarterFrame(fragment: Helper.fragment(from: data))
-//
-//    case .songPositionPointer:
-//      self = try .songPositionPointer(beatCount: Helper.long(from: data))
-//
-//    case .songSelect:
-//      self = try .songSelect(index: Helper.int(from: data))
-//
-//    case .tuneRequest:
-//      self = .tuneRequest
-//
-//    case .endOfExclusive:
-//      #warning("Figure out how sysex works.")
-//      fatalError("sysex")
-//
-//    case .timingClock:
-//      self = .timingClock
-//    case .start:
-//      self = .start
-//    case .continue:
-//      self = .continue
-//    case .stop:
-//      self = .stop
-//    case .activeSensing:
-//      self = .activeSensing
-//    case .systemReset:
-//      self = .systemReset
-//    }
   }
 }
 

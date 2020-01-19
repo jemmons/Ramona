@@ -2,7 +2,7 @@ import Foundation
 
 
 
-public struct DataByte {
+public struct DataByte: Int7Value {
   public let value: Int
   
   
@@ -15,14 +15,6 @@ public struct DataByte {
       throw Error.isStatusByte
     }
     value = Int(byte)
-  }
-}
-
-
-
-public extension DataByte {
-  func asMSB(withLSB lsb: DataByte) -> Int {
-    return (value << 7) | lsb.value
   }
 }
 

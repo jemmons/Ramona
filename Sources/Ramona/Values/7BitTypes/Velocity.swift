@@ -2,16 +2,17 @@ import Foundation
 
 
 
-public struct Velocity {
-  private let value: DataByte
+public struct Velocity: Int7Value {
+  private let byte: DataByte
+  public var value: Int { byte.value }
   
   
   public init(dataByte: DataByte) {
-    value = dataByte
+    byte = dataByte
   }
   
   public init(clamp: Int) {
-    value = DataByte(clamp: clamp)
+    byte = DataByte(clamp: clamp)
   }
 }
 

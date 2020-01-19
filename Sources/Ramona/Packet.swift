@@ -17,18 +17,22 @@ struct Packet {
 
 private enum Helper {
   static func makeMessages(from data: Data) -> [Message] {
-    return split(data: data).compactMap { status, data in
-      try? Message.init(status: status, data: data)
+    return parse(data: data).compactMap { statusByte, dataBytes in
+      try? Message.init(status: statusByte, data: dataBytes)
     }
   }
   
   
-  private static func split(data: Data) -> [(Status, Data)] {
-    return data.reduce(into: [(Status, Data)]()) { result, next in
+  private static func parse(data: Data) -> [(StatusByte, [DataByte])] {
+    return data.reduce(into: [(StatusByte, [DataByte])]()) { result, next in
       do {
-        try result.append((Status(byte: next), Data()))
+        try result.append((StatusByte(byte: next), []))
       } catch {
-        result.indices.last.map { result[$0].1.append(next) }
+        result.indices.last.map {
+          if let dataByte = try? DataByte(byte: next) {
+            result[$0].1.append(dataByte)
+          }
+        }
       }
     }
   }
