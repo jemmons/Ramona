@@ -23,12 +23,10 @@ public class Client {
 
 // MARK: - PUBLIC
 public extension Client {
-  @discardableResult func makeInput(_ name: String, source: Endpoint, inputHandler: @escaping ([Message]) -> Void) throws -> Port {
+  @discardableResult func makeInput(_ name: String, source: Endpoint, inputHandler: @escaping (Packet) -> Void) throws -> Port {
     var portRef: MIDIPortRef = .zero
     let portStatus = MIDIInputPortCreateWithBlock(ref, name as CFString, &portRef) { packetListPointer, _ in
-      PacketList(pointer: packetListPointer).forEach { packet in
-        inputHandler(packet.messages)
-      }
+      PacketList(pointer: packetListPointer).forEach(inputHandler)
     }
     
     guard noErr == portStatus else {

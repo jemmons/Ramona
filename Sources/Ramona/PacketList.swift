@@ -2,19 +2,22 @@ import Foundation
 import CoreMIDI
 
 
-struct PacketList: Sequence {
-  let midiPacketList: MIDIPacketList
-  let underestimatedCount: Int
-  typealias Element = Packet
+public typealias Packet = (timestamp: MIDITimeStamp, messages: [Message])
+
+
+public struct PacketList: Sequence {
+  private let midiPacketList: MIDIPacketList
+  public let underestimatedCount: Int
+  public typealias Element = Packet
   
   
-  init(pointer: UnsafePointer<MIDIPacketList>) {
+  public init(pointer: UnsafePointer<MIDIPacketList>) {
     midiPacketList = pointer.pointee
     underestimatedCount = Int(midiPacketList.numPackets)
   }
   
   
-  func makeIterator() -> AnyIterator<Element> {
+  public func makeIterator() -> AnyIterator<Element> {
     var midiPacket = midiPacketList.packet
     var numberOfPackets = underestimatedCount
     
@@ -33,8 +36,33 @@ struct PacketList: Sequence {
       withUnsafePointer(to: &midiPacket.data) { pointer -> Void in
         data = Data(bytes: pointer, count: length)
       }
+      
+      return (midiPacket.timeStamp, Helper.makeMessages(from: data))
+    }
+  }
+}
 
-      return Packet(timeStamp: midiPacket.timeStamp, data: data)
+
+
+private enum Helper {
+  static func makeMessages(from data: Data) -> [Message] {
+    return parse(data: data).compactMap { statusByte, dataBytes in
+      try? Message.init(status: statusByte, data: dataBytes)
+    }
+  }
+  
+  
+  private static func parse(data: Data) -> [(StatusByte, [DataByte])] {
+    return data.reduce(into: [(StatusByte, [DataByte])]()) { result, next in
+      do {
+        try result.append((StatusByte(byte: next), []))
+      } catch {
+        result.indices.last.map {
+          if let dataByte = try? DataByte(byte: next) {
+            result[$0].1.append(dataByte)
+          }
+        }
+      }
     }
   }
 }
