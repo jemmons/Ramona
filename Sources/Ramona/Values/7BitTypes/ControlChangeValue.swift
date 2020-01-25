@@ -3,17 +3,11 @@ import Foundation
 
 
 public struct ControlChangeValue: Int7Value {
-  private let byte: Int7Value
-  public var value: Int { byte.value }
-  
-  
-  public init(_ int7: Int7Value) {
-    byte = int7
-  }
+  @PositiveMax(0b0111_1111) public var value: Int = 0
 
   
-  public init(clamp: Int) {
-    byte = DataByte(clamp: clamp)
+  public init(clamp value: Int) {
+    self.value = value
   }
 }
 

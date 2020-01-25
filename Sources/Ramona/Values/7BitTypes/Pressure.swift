@@ -3,15 +3,10 @@ import Foundation
 
 
 public struct Pressure: Int7Value {
-  private let byte: DataByte
-  public var value: Int { byte.value }
-  
-  public init(dataByte: DataByte) {
-    byte = dataByte
-  }
-  
-  
-  public init(clamp: Int) {
-    byte = DataByte(clamp: clamp)
+  @PositiveMax(0b0111_1111) public var value: Int = 0
+
+
+  public init(clamp value: Int) {
+    self.value = value
   }
 }

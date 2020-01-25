@@ -4,7 +4,7 @@ import Ramona
 
 
 
-class StatusTest: XCTestCase {
+class StatusByteTest: XCTestCase {
   func testNoStatusBit() {
     (UInt8.zero ..< 0b1000_0000).forEach { byte in
       do {
@@ -38,5 +38,12 @@ class StatusTest: XCTestCase {
     try! XCTAssertEqual(StatusByte(byte: 0b1000_1111).channelIndex, 0b1111)
     try! XCTAssertEqual(StatusByte(byte: 0b1000_0000).channelIndex, 0b0000)
     try! XCTAssertEqual(StatusByte(byte: 0b1000_0101).channelIndex, 0b0101)
+  }
+  
+  
+  func testRoundTrip() {
+    (0b1000_0000...UInt8.max).forEach { byte in
+      _ = try! XCTAssertEqual(StatusByte(byte: byte).byte, byte)
+    }
   }
 }
