@@ -2,8 +2,8 @@ import Foundation
 
 
 
-public struct PitchChange: Int14Value {
-  @PositiveMax(0b0011_1111_1111_1111) public var value: Int = 0
+public struct PitchChange: Int14Data {
+  @Int14Clamp public var value: Int = 0
   
   
   public init(clamp value: Int) {
@@ -14,8 +14,8 @@ public struct PitchChange: Int14Value {
 
 
 public extension PitchChange {
-  static var off: Self { Self(lsb: DataByte(clamp: 0), msb: DataByte(clamp: 64)) }
-  static var max: Self { Self(lsb: DataByte(clamp: 127), msb: DataByte(clamp: 127)) }
-  static var min: Self { Self(lsb: DataByte(clamp: 0), msb: DataByte(clamp: 0)) }
+  static var off: Self { Self(lsb: AnyDataByte(clamp: 0), msb: AnyDataByte(clamp: 64)) }
+  static var max: Self { Self(lsb: AnyDataByte(clamp: 127), msb: AnyDataByte(clamp: 127)) }
+  static var min: Self { Self(lsb: AnyDataByte(clamp: 0), msb: AnyDataByte(clamp: 0)) }
 }
 

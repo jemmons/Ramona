@@ -9,27 +9,7 @@ public protocol Int7Value: CustomStringConvertible {
 
 
 
-public enum DataError: LocalizedError {
-  case isStatusByte
-  
-  public var errorDescription: String? {
-    switch self {
-    case .isStatusByte:
-      return "The status flag for this byte is set."
-    }
-  }
-}
-
-
 public extension Int7Value {
-  init(byte: UInt8) throws {
-    guard byte.isData else {
-      throw DataError.isStatusByte
-    }
-    self.init(clamp: Int(byte))
-  }
-  
-  
   init(_ int7Value: Int7Value) {
     self.init(clamp: int7Value.value)
   }
@@ -37,6 +17,16 @@ public extension Int7Value {
   
   var byte: UInt8 {
     return UInt8(clamping: value)
+  }
+  
+  
+  var topNibble: UInt8 {
+    return (byte & 0b0111_0000) >> 4
+  }
+  
+  
+  var bottomNibble: UInt8 {
+    return (byte & 0b0000_1111)
   }
   
   
@@ -50,13 +40,5 @@ public extension Int7Value {
 public extension Int7Value {
   var description: String {
     String(value)
-  }
-}
-
-
-
-private extension UInt8 {
-  var isData: Bool {
-    return self & 0b10000000 == 0b00000000
   }
 }

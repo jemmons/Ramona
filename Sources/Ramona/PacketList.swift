@@ -58,7 +58,7 @@ private enum Helper {
         try result.append((StatusByte(byte: next), []))
       } catch {
         result.indices.last.map {
-          if let dataByte = try? DataByte(byte: next) {
+          if let dataByte = try? AnyDataByte(byte: next) {
             result[$0].1.append(dataByte)
           }
         }

@@ -20,8 +20,8 @@ public enum Channel: Int {
   ch16
   
   
-  init(status: StatusByte) throws {
-    guard let c = Channel(rawValue: status.channelIndex) else {
+  init(nibble: UInt8) {
+    guard let c = Channel(rawValue: Int(nibble)) else {
       fatalError("Channel nibble larger than 4 bits")
     }
     self = c

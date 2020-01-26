@@ -2,17 +2,12 @@ import Foundation
 
 
 
-public struct Program {
-  private let value: DataByte
+public struct Program: DataByte {
+  @Int7Clamp public var value: Int = 0
   
   
-  public init(dataByte: DataByte) {
-    value = dataByte
-  }
-  
-  
-  public init(clamp: Int) {
-    value = DataByte(clamp: clamp)
+  public init(clamp value: Int) {
+    self.value = value
   }
 }
 

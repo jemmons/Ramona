@@ -2,42 +2,33 @@ import Foundation
 
 
 
-public struct StatusByte {
-  private let value: UInt8
-  public var messageType: Int { Int(value.messageType) }
-  public var channelIndex: Int { Int(value.channelIndex) }
-  public var systemMessageType: Int { channelIndex }
+public struct StatusByte: Int7Value {
+  @Int7Clamp public var value: Int = 0
+  
+
+  public init(clamp value: Int) {
+    self.value = value
+  }
+  
   
   public init(byte: UInt8) throws {
     guard byte.isStatus else {
-      throw Error.noStatusFlag
+      throw StatusBitError.isNotSet
     }
-    value = byte
+    self.init(clamp: Int(byte & 0b0111_1111))
   }
 }
 
 
 
 public extension StatusByte {
-  enum Error: LocalizedError {
-    case noStatusFlag
-    
-    public var errorDescription: String? {
-      switch self {
-      case .noStatusFlag:
-        return "The given byte does not have its status flag set."
-      }
-    }
-  }
-  
-  
   var byte: UInt8 {
-    return UInt8(clamping: 0b1000_0000 | (messageType << 4) | channelIndex)
+    return UInt8(clamping: 0b1000_0000 | value)
   }
   
   
   var expectedDataByteCount: Int {
-    switch (messageType, systemMessageType) {
+    switch (topNibble, bottomNibble) {
     case (0b000, _), // note off
          (0b001, _), // note on
          (0b010, _), // poly key pressure
@@ -53,25 +44,5 @@ public extension StatusByte {
     default:
       return 0
     }
-    
   }
 }
-
-
-
-// MARK: - HELPERS
-private extension UInt8 {
-  var isStatus: Bool {
-    return self & 0b10000000 == 0b10000000
-  }
-  
-  var messageType: UInt8 {
-    return (self & 0b01110000) >> 4
-  }
-  
-  var channelIndex: UInt8 {
-    return (self & 0b00001111)
-  }  
-}
-
-

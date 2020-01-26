@@ -10,7 +10,7 @@ class StatusByteTest: XCTestCase {
       do {
         _ = try StatusByte(byte: byte)
         XCTFail()
-      } catch StatusByte.Error.noStatusFlag {
+      } catch StatusBitError.isNotSet {
         XCTAssert(true)
       } catch {
         XCTFail()
@@ -28,16 +28,16 @@ class StatusByteTest: XCTestCase {
   
   
   func testMessageType() {
-    try! XCTAssertEqual(StatusByte(byte: 0b1111_1111).messageType, 0b111)
-    try! XCTAssertEqual(StatusByte(byte: 0b1000_1111).messageType, 0b000)
-    try! XCTAssertEqual(StatusByte(byte: 0b1010_1111).messageType, 0b010)
+    try! XCTAssertEqual(StatusByte(byte: 0b1111_1111).topNibble, 0b111)
+    try! XCTAssertEqual(StatusByte(byte: 0b1000_1111).topNibble, 0b000)
+    try! XCTAssertEqual(StatusByte(byte: 0b1010_1111).topNibble, 0b010)
   }
   
   
   func testChannelIndex() {
-    try! XCTAssertEqual(StatusByte(byte: 0b1000_1111).channelIndex, 0b1111)
-    try! XCTAssertEqual(StatusByte(byte: 0b1000_0000).channelIndex, 0b0000)
-    try! XCTAssertEqual(StatusByte(byte: 0b1000_0101).channelIndex, 0b0101)
+    try! XCTAssertEqual(StatusByte(byte: 0b1000_1111).bottomNibble, 0b1111)
+    try! XCTAssertEqual(StatusByte(byte: 0b1000_0000).bottomNibble, 0b0000)
+    try! XCTAssertEqual(StatusByte(byte: 0b1000_0101).bottomNibble, 0b0101)
   }
   
   
