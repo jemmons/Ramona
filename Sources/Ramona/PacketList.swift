@@ -3,7 +3,7 @@ import CoreMIDI
 
 
 public typealias Packet = (timestamp: MIDITimeStamp, messages: [Message])
-
+public typealias PacketHash = [MIDITimeStamp: [Message]]
 
 public struct PacketList: Sequence {
   private let midiPacketList: MIDIPacketList
