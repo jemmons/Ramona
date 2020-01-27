@@ -13,9 +13,8 @@ public enum SMPTEFragment {
   
   
   public init(dataByte: DataByte) {
-    let nibble = dataByte.value & 0b0000_1111
-    let type = dataByte.value & 0b0111_0000
-    switch type {
+    let nibble = Int(dataByte.bottomNibble)
+    switch dataByte.topNibble {
     case 0b000: self = .leastSignificantFrame(nibble)
     case 0b001: self = .mostSignificantFrame(nibble)
     case 0b010: self = .leastSignificantSecond(nibble)
