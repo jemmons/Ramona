@@ -13,7 +13,7 @@ public enum Message {
   case pitchBend(channel: Channel, change: PitchChange)
   case timeCodeQuarterFrame(fragment: SMPTEFragment)
   case songPositionPointer(beatCount: Beats)
-  case songSelect(index: Int)
+  case songSelect(index: DataByte)
   case tuneRequest
   case timingClock
   case start
@@ -27,40 +27,40 @@ public enum Message {
     switch (status.messageType, status.systemType) {
     case (.noteOff, let c?):
       try self = .noteOff(
-        channel: Channel(nibble: c.rawValue),
+        channel: c.asChannel,
         note: Note(data.firstByte()),
         velocity: Velocity(data.secondByte())
       )
     case (.noteOn, let c?):
       try self = .noteOn(
-        channel: Channel(nibble: c.rawValue),
+        channel: c.asChannel,
         note: Note(data.firstByte()),
         velocity: Velocity(data.secondByte())
       )
     case (.polyKeyPressure, let c?):
       try self = .polyKeyPressure(
-        channel: Channel(nibble: c.rawValue),
+        channel: c.asChannel,
         note: Note(data.firstByte()),
         pressure: Pressure(data.secondByte())
       )
     case (.controlChange, let c?):
       try self = .controlChange(
-        channel: Channel(nibble: c.rawValue),
+        channel: c.asChannel,
         control: ControlChange(controlType: data.firstByte(), data: data.secondByte())
       )
     case (.programChange, let c?):
       try self = .programChange(
-        channel: Channel(nibble: c.rawValue),
+        channel: c.asChannel,
         program: Program(data.secondByte())
       )
     case (.channelPressure, let c?):
       try self = .channelPressure(
-        channel: Channel(nibble: c.rawValue),
+        channel: c.asChannel,
         pressure: Pressure(data.firstByte())
       )
     case (.pitchBend, let c?):
       try self = .pitchBend(
-        channel: Channel(nibble: c.rawValue),
+        channel: c.asChannel,
         change: PitchChange(lsb: data.firstByte(), msb: data.secondByte())
       )
     case (.systemMessage, .systemExclusiveStart):
@@ -71,7 +71,7 @@ public enum Message {
     case (.systemMessage, .songPositionPointer):
       try self = .songPositionPointer(beatCount: Beats(lsb: data.firstByte(), msb: data.secondByte()))
     case (.systemMessage, .songSelect):
-      try self = .songSelect(index: data.firstByte().value)
+      try self = .songSelect(index: data.firstByte())
     case (.systemMessage, .tuneRequest):
       self = .tuneRequest
     case (.systemMessage, .systemExclusiveEnd):
@@ -109,6 +109,73 @@ public extension Message {
       case .undefined:
         return "This message is left undefined by the MIDI spec."
       }
+    }
+  }
+  
+  
+  var data: Data {
+    switch self {
+    case let .noteOff(channel: c, note: n, velocity: v):
+      let status = StatusByte(messageType: .noteOff, channel: c)
+      return Data(byte1: status.byte, byte2: n.byte, byte3: v.byte)
+      
+    case let .noteOn(channel: c, note: n, velocity: v):
+      let status = StatusByte(messageType: .noteOn, channel: c)
+      return Data(byte1: status.byte, byte2: n.byte, byte3: v.byte)
+
+    case let .polyKeyPressure(channel: c, note: n, pressure: p):
+      let status = StatusByte(messageType: .polyKeyPressure, channel: c)
+      return Data(byte1: status.byte, byte2: n.byte, byte3: p.byte)
+
+      
+    case let .controlChange(channel: c, control: cc):
+      let status = StatusByte(messageType: .controlChange, channel: c)
+      return Data(byte: status.byte) + cc.data
+
+      
+    case let .programChange(channel: c, program: p):
+      let status = StatusByte(messageType: .programChange, channel: c)
+      return Data(byte1: status.byte, byte2: p.byte)
+
+    case let .channelPressure(channel: c, pressure: p):
+      let status = StatusByte(messageType: .channelPressure, channel: c)
+      return Data(byte1: status.byte, byte2: p.byte)
+
+    case let .pitchBend(channel: c, change: pc):
+      let status = StatusByte(messageType: .pitchBend, channel: c)
+      var buf = Data(byte: status.byte)
+      buf.append(pc.data)
+      return buf
+
+    case let .timeCodeQuarterFrame(fragment: f):
+      return Data(byte1: StatusByte(systemType: .timeCodeQuarterFrame).byte, byte2: f.byte)
+      
+    case let .songPositionPointer(beatCount: b):
+      return Data(byte: StatusByte(systemType: .songPositionPointer).byte) + b.data
+      
+    case let .songSelect(index: i):
+      return Data(byte1: StatusByte(systemType: .songSelect).byte, byte2: i.byte)
+      
+    case .tuneRequest:
+      return Data(byte: StatusByte(systemType: .tuneRequest).byte)
+      
+    case .timingClock:
+      return Data(byte: StatusByte(systemType: .timingClock).byte)
+      
+    case .start:
+      return Data(byte: StatusByte(systemType: .start).byte)
+      
+    case .`continue`:
+      return Data(byte: StatusByte(systemType: .continue).byte)
+      
+    case .stop:
+      return Data(byte: StatusByte(systemType: .stop).byte)
+      
+    case .activeSensing:
+      return Data(byte: StatusByte(systemType: .activeSensing).byte)
+      
+    case .systemReset:
+      return Data(byte: StatusByte(systemType: .systemReset).byte)
     }
   }
 }

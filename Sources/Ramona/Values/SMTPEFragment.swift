@@ -28,3 +28,26 @@ public enum SMPTEFragment {
   }
 }
 
+
+public extension SMPTEFragment {
+  var byte: UInt8 {
+    switch self {
+    case let .leastSignificantFrame(nibble):
+      return UInt8(clamping: 0b000_0000 | nibble)
+    case let .mostSignificantFrame(nibble):
+      return UInt8(clamping: 0b001_0000 | nibble)
+    case let .leastSignificantSecond(nibble):
+      return UInt8(clamping: 0b010_0000 | nibble)
+    case let .mostSignificantSecond(nibble):
+      return UInt8(clamping: 0b011_0000 | nibble)
+    case let .leastSignificantMinute(nibble):
+      return UInt8(clamping: 0b100_0000 | nibble)
+    case let .mostSignificantMinute(nibble):
+      return UInt8(clamping: 0b101_0000 | nibble)
+    case let .leastSignificantHour(nibble):
+      return UInt8(clamping: 0b110_0000 | nibble)
+    case let .mostSignificantHour(nibble):
+      return UInt8(clamping: 0b111_0000 | nibble)
+    }
+  }
+}

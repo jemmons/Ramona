@@ -17,6 +17,17 @@ public struct StatusByte: Int7Value {
     }
     self.init(clamp: Int(byte & 0b0111_1111))
   }
+  
+  
+  public init(messageType: MessageType, channel: Channel) {
+    value = Int((messageType.rawValue << 4) | (channel.rawValue & 0b0000_1111))
+  }
+  
+  
+  public init(systemType: SystemType) {
+    self.init(messageType: .systemMessage, channel: systemType.asChannel)
+  }
+
 }
 
 
@@ -47,6 +58,10 @@ public extension StatusByte {
     case stop = 0b1100
     case activeSensing = 0b1110
     case systemReset = 0b1111
+    
+    var asChannel: Channel {
+      return Channel(nibble: rawValue)
+    }
   }
   
   

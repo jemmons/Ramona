@@ -2,17 +2,6 @@ import Foundation
 
 
 public enum ControlChange {
-  enum Error: LocalizedError {
-    case missingData
-    
-    var errorDescription: String {
-      switch self {
-      case .missingData:
-        return "There is insufficiant data for this control change."
-      }
-    }
-  }
-  
   case bankSelectMSB(msb: ControlChangeValue)
   case modulation(msb: ControlChangeValue)
   case breathController(msb: ControlChangeValue)
@@ -279,6 +268,402 @@ public enum ControlChange {
     case 126: self = .monoModeOn(value: ccValue)
     case 127: self = .polyModeOn(unused: ccValue)
     default: fatalError("Control change outside of 7-bit range")
+    }
+  }
+}
+
+
+
+public extension ControlChange {
+  var data: Data {
+    switch self {
+    case .bankSelectMSB(msb: let v):
+      return Data(byte1:0, byte2: v.byte)
+    case .modulation(msb: let v):
+      return Data(byte1:1, byte2: v.byte)
+
+    case .breathController(msb: let v):
+      return Data(byte1:2, byte2: v.byte)
+
+    case .cc3(msb: let v):
+      return Data(byte1:3, byte2: v.byte)
+
+    case .footController(msb: let v):
+      return Data(byte1:4, byte2: v.byte)
+      
+    case .portamentoTime(msb: let v):
+      return Data(byte1:5, byte2: v.byte)
+      
+    case .coarseDataEntry(msb: let v):
+      return Data(byte1:6, byte2: v.byte)
+      
+    case .channelVolume(msb: let v):
+      return Data(byte1:7, byte2: v.byte)
+      
+    case .balance(msb: let v):
+      return Data(byte1:8, byte2: v.byte)
+      
+    case .cc9(msb: let v):
+      return Data(byte1:9, byte2: v.byte)
+      
+    case .pan(msb: let v):
+      return Data(byte1:10, byte2: v.byte)
+      
+    case .expressionController(msb: let v):
+      return Data(byte1:11, byte2: v.byte)
+      
+    case .effectControl1(msb: let v):
+      return Data(byte1:12, byte2: v.byte)
+      
+    case .effectControl2(msb: let v):
+      return Data(byte1:13, byte2: v.byte)
+      
+    case .cc14(msb: let v):
+      return Data(byte1:14, byte2: v.byte)
+      
+    case .cc15(msb: let v):
+      return Data(byte1:15, byte2: v.byte)
+      
+    case .generalPurposeController1(msb: let v):
+      return Data(byte1:16, byte2: v.byte)
+      
+    case .generalPurposeController2(msb: let v):
+      return Data(byte1:17, byte2: v.byte)
+      
+    case .generalPurposeController3(msb: let v):
+      return Data(byte1:18, byte2: v.byte)
+      
+    case .generalPurposeController4(msb: let v):
+      return Data(byte1:19, byte2: v.byte)
+      
+    case .cc20(msb: let v):
+      return Data(byte1:20, byte2: v.byte)
+      
+    case .cc21(msb: let v):
+      return Data(byte1:21, byte2: v.byte)
+      
+    case .cc22(msb: let v):
+      return Data(byte1:22, byte2: v.byte)
+      
+    case .cc23(msb: let v):
+      return Data(byte1:23, byte2: v.byte)
+      
+    case .cc24(msb: let v):
+      return Data(byte1:24, byte2: v.byte)
+      
+    case .cc25(msb: let v):
+      return Data(byte1:25, byte2: v.byte)
+      
+    case .cc26(msb: let v):
+      return Data(byte1:26, byte2: v.byte)
+      
+    case .cc27(msb: let v):
+      return Data(byte1:27, byte2: v.byte)
+      
+    case .cc28(msb: let v):
+      return Data(byte1:28, byte2: v.byte)
+      
+    case .cc29(msb: let v):
+      return Data(byte1:29, byte2: v.byte)
+      
+    case .cc30(msb: let v):
+      return Data(byte1:30, byte2: v.byte)
+      
+    case .cc31(msb: let v):
+      return Data(byte1:31, byte2: v.byte)
+      
+      
+    case .fineBankSelect(lsb: let v):
+      return Data(byte1:32, byte2: v.byte)
+      
+    case .fineModulation(lsb: let v):
+      return Data(byte1:33, byte2: v.byte)
+      
+    case .fineBreathController(lsb: let v):
+      return Data(byte1:34, byte2: v.byte)
+      
+    case .fineCC3(lsb: let v):
+      return Data(byte1:35, byte2: v.byte)
+      
+    case .finefootController(lsb: let v):
+      return Data(byte1:36, byte2: v.byte)
+      
+    case .finePortamentoTime(lsb: let v):
+      return Data(byte1:37, byte2: v.byte)
+      
+    case .fineDataEntry(lsb: let v):
+      return Data(byte1:38, byte2: v.byte)
+      
+    case .fineChannelVolume(lsb: let v):
+      return Data(byte1:39, byte2: v.byte)
+      
+    case .fineBalance(lsb: let v):
+      return Data(byte1:40, byte2: v.byte)
+      
+    case .fineCC9(lsb: let v):
+      return Data(byte1:41, byte2: v.byte)
+      
+    case .finePan(lsb: let v):
+      return Data(byte1:42, byte2: v.byte)
+      
+    case .fineExpressionController(lsb: let v):
+      return Data(byte1:43, byte2: v.byte)
+      
+    case .fineEffectControl1(lsb: let v):
+      return Data(byte1:44, byte2: v.byte)
+      
+    case .fineEffectControl2(lsb: let v):
+      return Data(byte1:45, byte2: v.byte)
+      
+    case .fineCC14(lsb: let v):
+      return Data(byte1:46, byte2: v.byte)
+      
+    case .fineCC15(lsb: let v):
+      return Data(byte1:47, byte2: v.byte)
+      
+    case .fineGeneralPurposeController1(lsb: let v):
+      return Data(byte1:48, byte2: v.byte)
+      
+    case .fineGeneralPurposeController2(lsb: let v):
+      return Data(byte1:49, byte2: v.byte)
+      
+    case .fineGeneralPurposeController3(lsb: let v):
+      return Data(byte1:50, byte2: v.byte)
+      
+    case .fineGeneralPurposeController4(lsb: let v):
+      return Data(byte1:51, byte2: v.byte)
+      
+    case .fineCC20(lsb: let v):
+      return Data(byte1:52, byte2: v.byte)
+      
+    case .fineCC21(lsb: let v):
+      return Data(byte1:53, byte2: v.byte)
+      
+    case .fineCC22(lsb: let v):
+      return Data(byte1:54, byte2: v.byte)
+      
+    case .fineCC23(lsb: let v):
+      return Data(byte1:55, byte2: v.byte)
+      
+    case .fineCC24(lsb: let v):
+      return Data(byte1:56, byte2: v.byte)
+      
+    case .fineCC25(lsb: let v):
+      return Data(byte1:57, byte2: v.byte)
+      
+    case .fineCC26(lsb: let v):
+      return Data(byte1:58, byte2: v.byte)
+      
+    case .fineCC27(lsb: let v):
+      return Data(byte1:59, byte2: v.byte)
+      
+    case .fineCC28(lsb: let v):
+      return Data(byte1:60, byte2: v.byte)
+      
+    case .fineCC29(lsb: let v):
+      return Data(byte1:61, byte2: v.byte)
+      
+    case .fineCC30(lsb: let v):
+      return Data(byte1:62, byte2: v.byte)
+      
+    case .fineCC31(lsb: let v):
+      return Data(byte1:63, byte2: v.byte)
+      
+      
+    case .sustain(onOff: let v):
+      return Data(byte1:64, byte2: v.byte)
+      
+    case .portamento(onOff: let v):
+      return Data(byte1:65, byte2: v.byte)
+      
+    case .sostenuto(onOff: let v):
+      return Data(byte1:66, byte2: v.byte)
+      
+    case .soft(onOff: let v):
+      return Data(byte1:67, byte2: v.byte)
+      
+    case .legato(onOff: let v):
+      return Data(byte1:68, byte2: v.byte)
+      
+    case .hold2(onOff: let v):
+      return Data(byte1:69, byte2: v.byte)
+      
+      
+    case .soundController1(value: let v):
+      return Data(byte1:70, byte2: v.byte)
+      
+    case .soundController2(value: let v):
+      return Data(byte1:71, byte2: v.byte)
+      
+    case .soundController3(value: let v):
+      return Data(byte1:72, byte2: v.byte)
+      
+    case .soundController4(value: let v):
+      return Data(byte1:73, byte2: v.byte)
+      
+    case .soundController5(value: let v):
+      return Data(byte1:74, byte2: v.byte)
+      
+    case .soundController6(value: let v):
+      return Data(byte1:75, byte2: v.byte)
+      
+    case .soundController7(value: let v):
+      return Data(byte1:76, byte2: v.byte)
+      
+    case .soundController8(value: let v):
+      return Data(byte1:77, byte2: v.byte)
+      
+    case .soundController9(value: let v):
+      return Data(byte1:78, byte2: v.byte)
+      
+    case .soundController10(value: let v):
+      return Data(byte1:79, byte2: v.byte)
+      
+    case .generalPurposeController5(value: let v):
+      return Data(byte1:80, byte2: v.byte)
+      
+    case .generalPurposeController6(value: let v):
+      return Data(byte1:81, byte2: v.byte)
+      
+    case .generalPurposeController7(value: let v):
+      return Data(byte1:82, byte2: v.byte)
+      
+    case .generalPurposeController8(value: let v):
+      return Data(byte1:83, byte2: v.byte)
+      
+    case .portamentoControl(value: let v):
+      return Data(byte1:84, byte2: v.byte)
+      
+    case .cc85(value: let v):
+      return Data(byte1:85, byte2: v.byte)
+      
+    case .cc86(value: let v):
+      return Data(byte1:86, byte2: v.byte)
+      
+    case .cc87(value: let v):
+      return Data(byte1:87, byte2: v.byte)
+      
+    case .highResolutionVelocityPrefix(lsb: let v):
+      return Data(byte1:88, byte2: v.byte)
+      
+    case .cc89(value: let v):
+      return Data(byte1:89, byte2: v.byte)
+      
+    case .cc90(value: let v):
+      return Data(byte1:90, byte2: v.byte)
+      
+      
+    case .effects1Depth(value: let v):
+      return Data(byte1:91, byte2: v.byte)
+      
+    case .effects2Depth(value: let v):
+      return Data(byte1:92, byte2: v.byte)
+      
+    case .effects3Depth(value: let v):
+      return Data(byte1:93, byte2: v.byte)
+      
+    case .effects4Depth(value: let v):
+      return Data(byte1:94, byte2: v.byte)
+      
+    case .effects5Depth(value: let v):
+      return Data(byte1:95, byte2: v.byte)
+      
+    case .dataIncrement(unused: let v):
+      return Data(byte1:96, byte2: v.byte)
+      
+    case .dataDecrement(unused: let v):
+      return Data(byte1:97, byte2: v.byte)
+      
+    case .nonRegisteredParameterNumberLSB(lsb: let v):
+      return Data(byte1:98, byte2: v.byte)
+      
+    case .nonRegisteredParameterNumberMSB(msb: let v):
+      return Data(byte1:99, byte2: v.byte)
+      
+    case .registeredParameterNumberLSB(lsb: let v):
+      return Data(byte1:100, byte2: v.byte)
+      
+    case .registeredParameterNumberMSB(msb: let v):
+      return Data(byte1:101, byte2: v.byte)
+      
+    case .cc102(value: let v):
+      return Data(byte1:102, byte2: v.byte)
+      
+    case .cc103(value: let v):
+      return Data(byte1:103, byte2: v.byte)
+      
+    case .cc104(value: let v):
+      return Data(byte1:104, byte2: v.byte)
+      
+    case .cc105(value: let v):
+      return Data(byte1:105, byte2: v.byte)
+      
+    case .cc106(value: let v):
+      return Data(byte1:106, byte2: v.byte)
+      
+    case .cc107(value: let v):
+      return Data(byte1:107, byte2: v.byte)
+      
+    case .cc108(value: let v):
+      return Data(byte1:108, byte2: v.byte)
+      
+    case .cc109(value: let v):
+      return Data(byte1:109, byte2: v.byte)
+      
+    case .cc110(value: let v):
+      return Data(byte1:110, byte2: v.byte)
+      
+    case .cc111(value: let v):
+      return Data(byte1:111, byte2: v.byte)
+      
+    case .cc112(value: let v):
+      return Data(byte1:112, byte2: v.byte)
+      
+    case .cc113(value: let v):
+      return Data(byte1:113, byte2: v.byte)
+      
+    case .cc114(value: let v):
+      return Data(byte1:114, byte2: v.byte)
+      
+    case .cc115(value: let v):
+      return Data(byte1:115, byte2: v.byte)
+      
+    case .cc116(value: let v):
+      return Data(byte1:116, byte2: v.byte)
+      
+    case .cc117(value: let v):
+      return Data(byte1:117, byte2: v.byte)
+      
+    case .cc118(value: let v):
+      return Data(byte1:118, byte2: v.byte)
+      
+    case .cc119(value: let v):
+      return Data(byte1:119, byte2: v.byte)
+      
+      
+    case .allSoundOff(unused: let v):
+      return Data(byte1:120, byte2: v.byte)
+      
+    case .resetAllControllers(unused: let v):
+      return Data(byte1:121, byte2: v.byte)
+      
+    case .localControl(onOff: let v):
+      return Data(byte1:122, byte2: v.byte)
+      
+    case .allNotesOff(unused: let v):
+      return Data(byte1:123, byte2: v.byte)
+      
+    case .omniModeOff(unused: let v):
+      return Data(byte1:124, byte2: v.byte)
+      
+    case .omniModeOn(unused: let v):
+      return Data(byte1:125, byte2: v.byte)
+      
+    case .monoModeOn(value: let v):
+      return Data(byte1:126, byte2: v.byte)
+      
+    case .polyModeOn(unused: let v):
+      return Data(byte1:127, byte2: v.byte)
     }
   }
 }
