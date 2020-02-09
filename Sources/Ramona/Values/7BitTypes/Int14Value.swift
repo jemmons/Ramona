@@ -2,7 +2,7 @@ import Foundation
 
 
 
-public protocol Int14Data {
+public protocol Int14Data: MultibyteConvertible {
   var value: Int { get }
   init(clamp: Int)
 }

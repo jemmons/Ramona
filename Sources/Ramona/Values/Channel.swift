@@ -1,7 +1,7 @@
 import Foundation
 
 
-public enum Channel: UInt8 {
+public enum Channel: Int {
   case ch1 = 0,
   ch2,
   ch3,
@@ -20,9 +20,9 @@ public enum Channel: UInt8 {
   ch16
   
   
-  init(nibble: UInt8) {
-    guard let c = Channel(rawValue: nibble) else {
-      fatalError("Channel nibble larger than 4 bits")
+  init(nibble: BottomNibble) {
+    guard let c = Channel(rawValue: nibble.value) else {
+      preconditionFailure("BottomNibble larger than 4 bits")
     }
     self = c
   }
@@ -30,9 +30,17 @@ public enum Channel: UInt8 {
 
 
 
-public extension Channel {
-  var byte: UInt8 {
-    return rawValue
+extension Channel: ByteConvertible {
+  public var byte: UInt8 {
+    return UInt8(clamping: rawValue)
+  }
+}
+
+
+
+internal extension Channel {
+  var nibble: BottomNibble {
+    BottomNibble(clamp: rawValue)
   }
 }
 

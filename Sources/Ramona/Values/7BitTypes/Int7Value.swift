@@ -2,7 +2,7 @@ import Foundation
 
 
 
-public protocol Int7Value: CustomStringConvertible {
+public protocol Int7Value: CustomStringConvertible, ByteConvertible {
   var value: Int { get }
   init(clamp: Int)
 }
@@ -20,16 +20,11 @@ public extension Int7Value {
   }
   
   
-  var topNibble: UInt8 {
-    return (byte & 0b0111_0000) >> 4
+  var description: String {
+    String(value)
   }
-  
-  
-  var bottomNibble: UInt8 {
-    return (byte & 0b0000_1111)
-  }
-  
-  
+
+
   func asMSB(withLSB lsb: Int7Value) -> Int {
     return (value << 7) | lsb.value
   }
@@ -37,8 +32,13 @@ public extension Int7Value {
 
 
 
-public extension Int7Value {
-  var description: String {
-    String(value)
+internal extension Int7Value {
+  var topNibble: TopNibble {
+    TopNibble(clamp: (byte & 0b0111_0000) >> 4)
+  }
+  
+  
+  var bottomNibble: BottomNibble {
+    BottomNibble(clamp: byte & 0b0000_1111)
   }
 }

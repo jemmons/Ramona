@@ -46,20 +46,20 @@ public struct PacketList: Sequence {
 
 private enum Helper {
   static func makeMessages(from data: Data) -> [Message] {
-    return parse(data: data).compactMap { statusByte, dataBytes in
-      try? Message.init(status: statusByte, data: dataBytes)
+    return parse(data: data).compactMap { statusByte, messageData in
+      try? Message(status: statusByte, data: messageData)
     }
   }
   
   
-  private static func parse(data: Data) -> [(StatusByte, [DataByte])] {
-    return data.reduce(into: [(StatusByte, [DataByte])]()) { result, next in
+  private static func parse(data: Data) -> [(StatusByte, MessageData)] {
+    return data.reduce(into: [(StatusByte, MessageData)]()) { result, next in
       do {
-        try result.append((StatusByte(byte: next), []))
+        try result.append((StatusByte(byte: next), MessageData()))
       } catch {
         result.indices.last.map {
           if let dataByte = try? AnyDataByte(byte: next) {
-            result[$0].1.append(dataByte)
+            _ = try? result[$0].1.append(dataByte)
           }
         }
       }

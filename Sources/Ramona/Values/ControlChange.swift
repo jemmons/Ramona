@@ -274,8 +274,8 @@ public enum ControlChange {
 
 
 
-public extension ControlChange {
-  var data: Data {
+extension ControlChange: MultibyteConvertible {
+  public var data: Data {
     switch self {
     case .bankSelectMSB(msb: let v):
       return Data(byte1:0, byte2: v.byte)

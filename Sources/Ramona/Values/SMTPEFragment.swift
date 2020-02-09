@@ -13,24 +13,24 @@ public enum SMPTEFragment {
   
   
   public init(dataByte: DataByte) {
-    let nibble = Int(dataByte.bottomNibble)
-    switch dataByte.topNibble {
-    case 0b000: self = .leastSignificantFrame(nibble)
-    case 0b001: self = .mostSignificantFrame(nibble)
-    case 0b010: self = .leastSignificantSecond(nibble)
-    case 0b011: self = .mostSignificantSecond(nibble)
-    case 0b100: self = .leastSignificantMinute(nibble)
-    case 0b101: self = .mostSignificantMinute(nibble)
-    case 0b110: self = .leastSignificantHour(nibble)
-    case 0b111: self = .mostSignificantHour(nibble)
-    default: fatalError("Integers are broken.")
+    let timeFragment = dataByte.bottomNibble.value
+    switch dataByte.topNibble.value {
+    case 0b000: self = .leastSignificantFrame(timeFragment)
+    case 0b001: self = .mostSignificantFrame(timeFragment)
+    case 0b010: self = .leastSignificantSecond(timeFragment)
+    case 0b011: self = .mostSignificantSecond(timeFragment)
+    case 0b100: self = .leastSignificantMinute(timeFragment)
+    case 0b101: self = .mostSignificantMinute(timeFragment)
+    case 0b110: self = .leastSignificantHour(timeFragment)
+    case 0b111: self = .mostSignificantHour(timeFragment)
+    default: preconditionFailure("Top nibble not three bits.")
     }
   }
 }
 
 
-public extension SMPTEFragment {
-  var byte: UInt8 {
+extension SMPTEFragment: ByteConvertible {
+  public var byte: UInt8 {
     switch self {
     case let .leastSignificantFrame(nibble):
       return UInt8(clamping: 0b000_0000 | nibble)
