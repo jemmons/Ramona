@@ -21,36 +21,36 @@ public extension Note {
   static var f0: Self  { Self(clamp: 17) }
   static var f0Sharp: Self  { Self(clamp: 18) }
   static var g0: Self  { Self(clamp: 19) }
-  static var g0Sharp: Self  { Self(clamp: 10) }
-  static var a0: Self  { Self(clamp: 11) }
-  static var a0Sharp: Self { Self(clamp: 12) }
-  static var b0: Self { Self(clamp: 13) }
-  static var c1: Self { Self(clamp: 14) }
-  static var c1Sharp: Self { Self(clamp: 15) }
-  static var d1: Self { Self(clamp: 16) }
-  static var d1Sharp: Self { Self(clamp: 17) }
-  static var e1: Self { Self(clamp: 18) }
-  static var f1: Self { Self(clamp: 19) }
-  static var f1Sharp: Self { Self(clamp: 10) }
-  static var g1: Self { Self(clamp: 11) }
-  static var g1Sharp: Self { Self(clamp: 12) }
-  static var a1: Self { Self(clamp: 13) }
-  static var a1Sharp: Self { Self(clamp: 14) }
-  static var b1: Self { Self(clamp: 15) }
-  static var c2: Self { Self(clamp: 16) }
-  static var c2Sharp: Self { Self(clamp: 17) }
-  static var d2: Self { Self(clamp: 18) }
-  static var d2Sharp: Self { Self(clamp: 19) }
-  static var e2: Self { Self(clamp: 10) }
-  static var f2: Self { Self(clamp: 11) }
-  static var f2Sharp: Self { Self(clamp: 12) }
-  static var g2: Self { Self(clamp: 13) }
-  static var g2Sharp: Self { Self(clamp: 14) }
-  static var a2: Self { Self(clamp: 15) }
-  static var a2Sharp: Self { Self(clamp: 16) }
-  static var b2: Self { Self(clamp: 17) }
-  static var c3: Self { Self(clamp: 18) }
-  static var c3Sharp: Self { Self(clamp: 19) }
+  static var g0Sharp: Self  { Self(clamp: 20) }
+  static var a0: Self  { Self(clamp: 21) }
+  static var a0Sharp: Self { Self(clamp: 22) }
+  static var b0: Self { Self(clamp: 23) }
+  static var c1: Self { Self(clamp: 24) }
+  static var c1Sharp: Self { Self(clamp: 25) }
+  static var d1: Self { Self(clamp: 26) }
+  static var d1Sharp: Self { Self(clamp: 27) }
+  static var e1: Self { Self(clamp: 28) }
+  static var f1: Self { Self(clamp: 29) }
+  static var f1Sharp: Self { Self(clamp: 30) }
+  static var g1: Self { Self(clamp: 31) }
+  static var g1Sharp: Self { Self(clamp: 32) }
+  static var a1: Self { Self(clamp: 33) }
+  static var a1Sharp: Self { Self(clamp: 34) }
+  static var b1: Self { Self(clamp: 35) }
+  static var c2: Self { Self(clamp: 36) }
+  static var c2Sharp: Self { Self(clamp: 37) }
+  static var d2: Self { Self(clamp: 38) }
+  static var d2Sharp: Self { Self(clamp: 39) }
+  static var e2: Self { Self(clamp: 40) }
+  static var f2: Self { Self(clamp: 41) }
+  static var f2Sharp: Self { Self(clamp: 42) }
+  static var g2: Self { Self(clamp: 43) }
+  static var g2Sharp: Self { Self(clamp: 44) }
+  static var a2: Self { Self(clamp: 45) }
+  static var a2Sharp: Self { Self(clamp: 46) }
+  static var b2: Self { Self(clamp: 47) }
+  static var c3: Self { Self(clamp: 48) }
+  static var c3Sharp: Self { Self(clamp: 49) }
   static var d3: Self { Self(clamp: 50) }
   static var d3Sharp: Self { Self(clamp: 51) }
   static var e3: Self { Self(clamp: 52) }
