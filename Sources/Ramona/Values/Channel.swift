@@ -2,6 +2,18 @@ import Foundation
 
 
 public enum Channel: Int {
+  public enum Error: LocalizedError {
+    case outOfRange, missingData
+    
+    public var errorDescription: String? {
+      switch self {
+      case .outOfRange: return "Given channel outside range of 0–15."
+      case .missingData: return "Unable to create channel due to missing data."
+      }
+    }
+  }
+  
+  
   case ch1 = 0,
   ch2,
   ch3,
@@ -25,6 +37,22 @@ public enum Channel: Int {
       preconditionFailure("BottomNibble larger than 4 bits")
     }
     self = c
+  }
+  
+  
+  public init(byte: UInt8) throws {
+    guard let c = Channel(rawValue: Int(byte)) else {
+      throw Error.outOfRange
+    }
+    self = c
+  }
+  
+  
+  public init(data: Data) throws {
+    guard let byte = data.first else {
+      throw Error.missingData
+    }
+    try self.init(byte: byte)
   }
 }
 
